@@ -21,7 +21,7 @@ Repository Location
 
 The UMR tool can be found publicly at the following address:
 
-    * https://cgit.freedesktop.org/amd/umr/
+    * https://gitlab.freedesktop.org/tomstdenis/umr
 
 This contains the public master branch which may be shared with customers, vendors, and developers.
 
