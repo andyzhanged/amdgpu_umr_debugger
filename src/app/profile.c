@@ -93,7 +93,7 @@ void umr_profiler(struct umr_asic *asic, int samples, int shader_target)
 	char *ringname;
 	uint32_t total_hits_by_type[3], total_hits;
 	const char *shader_names[3] = { "pixel", "vertex", "compute" };
-	int sample_hit;
+	int sample_hit, gprs;
 
 	kill_asic = asic;
 	signal(SIGINT, &sigint_handler);
@@ -110,6 +110,7 @@ void umr_profiler(struct umr_asic *asic, int samples, int shader_target)
 		umr_create_mmio_accel(asic);
 
 	ringname = asic->options.ring_name[0] ? asic->options.ring_name : "gfx";
+	gprs = asic->options.skip_gprs;
 
 	while (samples--) {
 		fprintf(stderr, "%5u samples left\r", samples);
@@ -122,7 +123,9 @@ void umr_profiler(struct umr_asic *asic, int samples, int shader_target)
 			if (umr_pm4_decode_ring_is_halted(asic, ringname) == 0)
 				continue;
 
+			asic->options.skip_gprs = 1;
 			wd = umr_scan_wave_data(asic);
+			asic->options.skip_gprs = gprs;
 		} while (!wd);
 
 		// grab PM4 stream for these halted waves

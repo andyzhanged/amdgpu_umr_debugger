@@ -218,7 +218,8 @@ struct umr_options {
 	    no_disasm,
 	    disasm_early_term,
 	    use_xgmi,
-	    disasm_anyways;
+	    disasm_anyways,
+	    skip_gprs;
 
 	union {
 		struct {

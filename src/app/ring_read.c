@@ -28,7 +28,7 @@
 void umr_read_ring(struct umr_asic *asic, char *ringpath)
 {
 	char ringname[32], from[32], to[32];
-	int use_decoder, enable_decoder;
+	int use_decoder, enable_decoder, gprs;
 	uint32_t wptr, rptr, drv_wptr, ringsize, start, end, value,
 		 *ring_data;
 	struct umr_ring_decoder decoder, *pdecoder, *ppdecoder;
@@ -132,7 +132,10 @@ void umr_read_ring(struct umr_asic *asic, char *ringpath)
 	free(ring_data);
 	printf("\n");
 
+	gprs = asic->options.skip_gprs;
+	asic->options.skip_gprs = 1;
 	wd = umr_scan_wave_data(asic);
+	asic->options.skip_gprs = gprs;
 	umr_dump_shaders(asic, &decoder, wd);
 	pdecoder = decoder.next_ib;
 	while (pdecoder) {
