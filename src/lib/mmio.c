@@ -195,17 +195,17 @@ int umr_grbm_select_index(struct umr_asic *asic, uint32_t se, uint32_t sh, uint3
 
 	grbm_idx = umr_find_reg_data(asic, "mmGRBM_GFX_INDEX");
 	if (grbm_idx) {
-		if (instance == 0xFFFFFFFF) {
+		if (instance >= 0x3FF) {
 			data |= umr_bitslice_compose_value(asic, grbm_idx, "INSTANCE_BROADCAST_WRITES", 1);
 		} else {
 			data |= umr_bitslice_compose_value(asic, grbm_idx, "INSTANCE_INDEX", instance);
 		}
-		if (se == 0xFFFFFFFF) {
+		if (se >= 0x3FF) {
 			data |= umr_bitslice_compose_value(asic, grbm_idx, "SE_BROADCAST_WRITES", 1);
 		} else {
 			data |= umr_bitslice_compose_value(asic, grbm_idx, "SE_INDEX", se);
 		}
-		if (sh == 0xFFFFFFFF) {
+		if (sh >= 0x3FF) {
 			data |= umr_bitslice_compose_value(asic, grbm_idx, "SH_BROADCAST_WRITES", 1);
 		} else {
 			data |= umr_bitslice_compose_value(asic, grbm_idx, "SH_INDEX", sh);
