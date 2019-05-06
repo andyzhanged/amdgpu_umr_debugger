@@ -44,6 +44,7 @@ static int vm_printf(const char *fmt, ...)
 
 	va_start(ap, fmt);
 	r = vfprintf(stderr, fmt, ap);
+	fflush(stderr);
 	va_end(ap);
 	return r;
 }

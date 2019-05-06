@@ -146,11 +146,11 @@ static int umr_access_vram_vi(struct umr_asic *asic, uint32_t vmid,
 
 	if (asic->options.verbose)
 		asic->mem_funcs.vm_message(
-				"[VERBOSE]: mmVM_CONTEXT%d_PAGE_TABLE_START_ADDR=0x%" PRIx32 "\n"
-				"[VERBOSE]: mmVM_CONTEXT%d_PAGE_TABLE_BASE_ADDR=0x%" PRIx32 "\n"
-				"[VERBOSE]: mmVM_CONTEXT%d_CNTL=0x%" PRIx32 "\n"
-				"[VERBOSE]: mmMC_VM_FB_LOCATION=0x%" PRIx32 "\n"
-				"[VERBOSE]: mmMC_VM_FB_OFFSET=0x%" PRIx32 "\n",
+				"mmVM_CONTEXT%d_PAGE_TABLE_START_ADDR=0x%" PRIx32 "\n"
+				"mmVM_CONTEXT%d_PAGE_TABLE_BASE_ADDR=0x%" PRIx32 "\n"
+				"mmVM_CONTEXT%d_CNTL=0x%" PRIx32 "\n"
+				"mmMC_VM_FB_LOCATION=0x%" PRIx32 "\n"
+				"mmMC_VM_FB_OFFSET=0x%" PRIx32 "\n",
 			vmid ? 1 : 0,
 			registers.mmVM_CONTEXTx_PAGE_TABLE_START_ADDR,
 			vmid ? 1 : 0,
@@ -183,7 +183,7 @@ static int umr_access_vram_vi(struct umr_asic *asic, uint32_t vmid,
 			pde_fields.pte_base_addr = pde_entry & 0xFFFFFFF000ULL;
 			pde_fields.valid         = pde_entry & 1;
 			if (memcmp(&pde_copy, &pde_fields, sizeof pde_fields) && asic->options.verbose)
-				asic->mem_funcs.vm_message("[VERBOSE]: PDE=0x%016" PRIx64 ", VA=0x%010" PRIx64 ", PBA==0x%010" PRIx64 ", V=%" PRIu64 "\n",
+				asic->mem_funcs.vm_message("PDE=0x%016" PRIx64 ", VA=0x%010" PRIx64 ", PBA==0x%010" PRIx64 ", V=%" PRIu64 "\n",
 						pde_entry,
 						address & pde_mask,
 						pde_fields.pte_base_addr,
@@ -210,7 +210,7 @@ static int umr_access_vram_vi(struct umr_asic *asic, uint32_t vmid,
 			pte_fields.system         = (pte_entry >> 1) & 1;
 			pte_fields.valid          = pte_entry & 1;
 			if (asic->options.verbose)
-				asic->mem_funcs.vm_message("[VERBOSE]: \\-> PTE=0x%016" PRIx64 ", VA=0x%010" PRIx64 ", PBA==0x%010" PRIx64 ", V=%" PRIu64 ", S=%" PRIu64 "\n",
+				asic->mem_funcs.vm_message("\\-> PTE=0x%016" PRIx64 ", VA=0x%010" PRIx64 ", PBA==0x%010" PRIx64 ", V=%" PRIu64 ", S=%" PRIu64 "\n",
 					pte_entry,
 					address & pte_mask,
 					pte_fields.page_base_addr,
@@ -239,7 +239,7 @@ static int umr_access_vram_vi(struct umr_asic *asic, uint32_t vmid,
 			pte_fields.system         = (pte_entry >> 1) & 1;
 			pte_fields.valid          = pte_entry & 1;
 			if (asic->options.verbose)
-				asic->mem_funcs.vm_message("[VERBOSE]: PTE=0x%016" PRIx64 ", VA=0x%010" PRIx64 ", PBA==0x%010" PRIx64 ", V=%" PRIu64 ", S=%" PRIu64 "\n",
+				asic->mem_funcs.vm_message("PTE=0x%016" PRIx64 ", VA=0x%010" PRIx64 ", PBA==0x%010" PRIx64 ", V=%" PRIu64 ", S=%" PRIu64 "\n",
 					pte_entry,
 					address & ~((uint64_t)0xFFF),
 					pte_fields.page_base_addr,
@@ -417,15 +417,15 @@ static int umr_access_vram_ai(struct umr_asic *asic, uint32_t vmid,
 
 	if (asic->options.verbose)
 		asic->mem_funcs.vm_message(
-				"[VERBOSE]: mmVM_CONTEXT%" PRIu32 "_PAGE_TABLE_START_ADDR_LO32=0x%" PRIx32 "\n"
-				"[VERBOSE]: mmVM_CONTEXT%" PRIu32 "_PAGE_TABLE_START_ADDR_HI32=0x%" PRIx32 "\n"
-				"[VERBOSE]: mmVM_CONTEXT%" PRIu32 "_PAGE_TABLE_BASE_ADDR_LO32=0x%" PRIx32 "\n"
-				"[VERBOSE]: mmVM_CONTEXT%" PRIu32 "_PAGE_TABLE_BASE_ADDR_HI32=0x%" PRIx32 "\n"
-				"[VERBOSE]: mmVM_CONTEXT%" PRIu32 "_CNTL=0x%" PRIx32 "\n"
-				"[VERBOSE]: mmVGA_MEMORY_BASE_ADDRESS=0x%" PRIx32 "\n"
-				"[VERBOSE]: mmVGA_MEMORY_BASE_ADDRESS_HIGH=0x%" PRIx32 "\n"
-				"[VERBOSE]: mmMC_VM_FB_OFFSET=0x%" PRIx32 "\n"
-				"[VERBOSE]: mmMC_VM_FB_LOCATION_BASE=0x%" PRIx64 "\n",
+				"mmVM_CONTEXT%" PRIu32 "_PAGE_TABLE_START_ADDR_LO32=0x%" PRIx32 "\n"
+				"mmVM_CONTEXT%" PRIu32 "_PAGE_TABLE_START_ADDR_HI32=0x%" PRIx32 "\n"
+				"mmVM_CONTEXT%" PRIu32 "_PAGE_TABLE_BASE_ADDR_LO32=0x%" PRIx32 "\n"
+				"mmVM_CONTEXT%" PRIu32 "_PAGE_TABLE_BASE_ADDR_HI32=0x%" PRIx32 "\n"
+				"mmVM_CONTEXT%" PRIu32 "_CNTL=0x%" PRIx32 "\n"
+				"mmVGA_MEMORY_BASE_ADDRESS=0x%" PRIx32 "\n"
+				"mmVGA_MEMORY_BASE_ADDRESS_HIGH=0x%" PRIx32 "\n"
+				"mmMC_VM_FB_OFFSET=0x%" PRIx32 "\n"
+				"mmMC_VM_FB_LOCATION_BASE=0x%" PRIx64 "\n",
 			vmid, registers.mmVM_CONTEXTx_PAGE_TABLE_START_ADDR_LO32,
 			vmid, registers.mmVM_CONTEXTx_PAGE_TABLE_START_ADDR_HI32,
 			vmid, registers.mmVM_CONTEXTx_PAGE_TABLE_BASE_ADDR_LO32,
@@ -460,7 +460,7 @@ static int umr_access_vram_ai(struct umr_asic *asic, uint32_t vmid,
 			pde_cnt = 0;
 
 			if (memcmp(&pde_fields, &pde_array[pde_cnt], sizeof pde_fields) && asic->options.verbose)
-				asic->mem_funcs.vm_message("[VERBOSE]: BASE=0x%016" PRIx64 ", VA=0x%012" PRIx64 ", PBA==0x%012" PRIx64 ", V=%" PRIu64 ", S=%" PRIu64 ", C=%" PRIu64 ", P=%" PRIu64 "\n",
+				asic->mem_funcs.vm_message("BASE=0x%016" PRIx64 ", VA=0x%012" PRIx64 ", PBA==0x%012" PRIx64 ", V=%" PRIu64 ", S=%" PRIu64 ", C=%" PRIu64 ", P=%" PRIu64 "\n",
 						pde_entry,
 						address & va_mask,
 						pde_fields.pte_base_addr,
@@ -506,7 +506,7 @@ static int umr_access_vram_ai(struct umr_asic *asic, uint32_t vmid,
 				pde_fields.pte           = (pde_entry >> 54) & 1;
 				if (!pde_fields.pte) {
 					if (memcmp(&pde_fields, &pde_array[pde_cnt], sizeof pde_fields) && asic->options.verbose)
-						asic->mem_funcs.vm_message("[VERBOSE]: %s PDE%d=0x%016" PRIx64 ", VA=0x%012" PRIx64 ", PBA==0x%012" PRIx64 ", V=%" PRIu64 ", S=%" PRIu64 ", C=%" PRIu64 ", P=%" PRIu64 "\n",
+						asic->mem_funcs.vm_message("%s PDE%d=0x%016" PRIx64 ", VA=0x%012" PRIx64 ", PBA==0x%012" PRIx64 ", V=%" PRIu64 ", S=%" PRIu64 ", C=%" PRIu64 ", P=%" PRIu64 "\n",
 								&indentation[12-pde_cnt*3],
 								page_table_depth - pde_cnt,
 								pde_entry,
@@ -565,7 +565,7 @@ pde_is_pte:
 			pte_fields.prt            = (pte_entry >> 61) & 1;
 			pte_fields.further        = (pte_entry >> 56) & 1;
 			if (asic->options.verbose)
-				asic->mem_funcs.vm_message("[VERBOSE]: %s %s==0x%016" PRIx64 ", VA=0x%012" PRIx64 ", PBA==0x%012" PRIx64 ", V=%" PRIu64 ", S=%" PRIu64 ", P=%" PRIu64 "\n",
+				asic->mem_funcs.vm_message("%s %s==0x%016" PRIx64 ", VA=0x%012" PRIx64 ", PBA==0x%012" PRIx64 ", V=%" PRIu64 ", S=%" PRIu64 ", P=%" PRIu64 "\n",
 					&indentation[12-pde_cnt*3],
 					(pte_fields.further) ? "PTE-FURTHER" : "PTE",
 					pte_entry,
@@ -606,7 +606,7 @@ pde_is_pte:
 			pde_fields.valid         = page_table_base_addr & 1;
 
 			if (memcmp(&pde_array[0], &pde_fields, sizeof pde_fields) && asic->options.verbose)
-				asic->mem_funcs.vm_message("[VERBOSE]: PDE=0x%016" PRIx64 ", PBA==0x%012" PRIx64 ", V=%" PRIu64 ", S=%" PRIu64 ", FS=%" PRIu64 "\n",
+				asic->mem_funcs.vm_message("PDE=0x%016" PRIx64 ", PBA==0x%012" PRIx64 ", V=%" PRIu64 ", S=%" PRIu64 ", FS=%" PRIu64 "\n",
 						page_table_base_addr,
 						pde_fields.pte_base_addr,
 						pde_fields.valid,
@@ -631,7 +631,7 @@ pde_is_pte:
 			pte_fields.prt            = 0;
 
 			if (asic->options.verbose)
-				asic->mem_funcs.vm_message("[VERBOSE]: \\-> PTE=0x%016" PRIx64 ", VA=0x%016" PRIx64 ", PBA==0x%012" PRIx64 ", F=%" PRIu64 ", V=%" PRIu64 ", S=%" PRIu64 "\n",
+				asic->mem_funcs.vm_message("\\-> PTE=0x%016" PRIx64 ", VA=0x%016" PRIx64 ", PBA==0x%012" PRIx64 ", F=%" PRIu64 ", V=%" PRIu64 ", S=%" PRIu64 "\n",
 					pte_entry,
 					address & ~((uint64_t)0xFFF),
 					pte_fields.page_base_addr,
@@ -678,7 +678,7 @@ next_page:
 			}
 		} else {
 			if (asic->options.verbose && pte_fields.prt)
-				asic->mem_funcs.vm_message("[VERBOSE]: Page is set as PRT so we cannot read/write it, skipping ahead.\n");
+				asic->mem_funcs.vm_message("Page is set as PRT so we cannot read/write it, skipping ahead.\n");
 
 			if (pdst)
 				pdst += chunk_size;
