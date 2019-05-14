@@ -115,6 +115,7 @@ void umr_profiler(struct umr_asic *asic, int samples, int shader_target)
 	while (samples--) {
 		fprintf(stderr, "%5u samples left\r", samples);
 		fflush(stderr);
+		wd = NULL;
 		do {
 			umr_sq_cmd_halt_waves(asic, UMR_SQ_CMD_RESUME);
 			umr_sq_cmd_halt_waves(asic, UMR_SQ_CMD_HALT);
