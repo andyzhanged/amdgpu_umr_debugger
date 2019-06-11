@@ -733,6 +733,15 @@ int umr_access_vram(struct umr_asic *asic, uint32_t vmid, uint64_t address, uint
 		return -1;
 	}
 
+	// read/write from process space
+	if ((vmid & 0xFF00) == UMR_PROCESS_HUB) {
+		if (!write_en)
+			memcpy(data, (char *)address, size);
+		else
+			memcpy((char *)address, data, size);
+		return 0;
+	}
+
 	// mask VM addresses
 	if ((vmid & 0xFF00) != UMR_LINEAR_HUB && asic->family > FAMILY_VI)
 		address &= 0xFFFFFFFFFFFFULL;

@@ -403,6 +403,24 @@ int main(int argc, char **argv)
 			} else {
 					printf("--dump-ib requires three parameters\n");
 			}
+		} else if (!strcmp(argv[i], "--dump-ib-file") || !strcmp(argv[i], "-df")) {
+			if (i + 1 < argc) {
+				int pm;
+				char *name = argv[i+1];
+
+				if (!asic)
+					asic = get_asic();
+
+				if ((i + 2 < argc) && sscanf(argv[i+2], "%d", &pm) == 1) {
+					i += 2;
+				} else {
+					pm = 4;
+					i += 1;
+				}
+				umr_ib_read_file(asic, name, pm);
+			} else {
+					printf("--dump-ib-file requires two parameters\n");
+			}
 		} else if (!strcmp(argv[i], "--logscan") || !strcmp(argv[i], "-ls")) {
 			if (!asic)
 				asic = get_asic();
@@ -716,6 +734,10 @@ printf(
 	"\n\t\tDump an IB packet at an address with an optional VMID.  The length is specified"
 	"\n\t\tin bytes.  The type of decoder <pm> is optional and defaults to PM4 packets."
 	"\n\t\tCan specify '3' for SDMA packets.\n"
+"\n\t--dump-ib-file, -df filename [pm]"
+	"\n\t\tDump an IB stored in a file as a series of hexadecimal DWORDS one per line."
+	"\n\t\tOptionally supply a PM type, can specify '3' for SDMA IBs or '4' for"
+	"\n\t\tPM4 IBs.  The default is PM4."
 "\n\n");
 			exit(EXIT_SUCCESS);
 		} else {

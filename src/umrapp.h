@@ -42,6 +42,7 @@ int umr_set_register_bit(struct umr_asic *asic, char *regpath, char *regvalue);
 /* Read and display a ring buffer */
 void umr_read_ring(struct umr_asic *asic, char *ringpath);
 void umr_ib_read(struct umr_asic *asic, unsigned vmid, uint64_t addr, uint32_t len, int pm);
+void umr_ib_read_file(struct umr_asic *asic, char *filename, int pm);
 
 void umr_lookup(struct umr_asic *asic, char *address, char *value);
 void umr_scan_log(struct umr_asic *asic);

@@ -8,6 +8,7 @@ add_library(umrapp STATIC
   print_config.c
   profile.c
   ib_read.c
+  ib_read_file.c
   ring_read.c
   scan.c
   scan_log.c

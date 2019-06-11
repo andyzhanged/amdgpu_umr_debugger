@@ -35,9 +35,15 @@ void umr_dump_ib(struct umr_asic *asic, struct umr_ring_decoder *decoder)
 {
 	uint32_t *data = NULL, x;
 	static const char *hubs[] = { "gfxhub", "mmhub" };
+	const char *hub;
+
+	if ((decoder->next_ib_info.vmid >> 8) < 2)
+		hub = hubs[decoder->next_ib_info.vmid >> 8];
+	else
+		hub = "";
 
 	printf("Dumping IB at (%s%s%s) VMID:%u 0x%" PRIx64 " of %u words from ",
-		GREEN, hubs[decoder->next_ib_info.vmid >> 8], RST,
+		GREEN, hub, RST,
 		(unsigned)decoder->next_ib_info.vmid & 0xFF,
 		decoder->next_ib_info.ib_addr,
 		(unsigned)decoder->next_ib_info.size/4);

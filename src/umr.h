@@ -49,6 +49,7 @@ enum umr_hub_space {
 	UMR_GFX_HUB = 0 << 8,        // default on everything before AI
 	UMR_MM_HUB = 1 << 8,         // available on AI and later
 
+	UMR_PROCESS_HUB = 0xFD << 8, // process space, allows the use of umr functions on memory buffers inside the process
 	UMR_USER_HUB = 0xFE << 8,    // for user supplied HUB names (npi work...)
 	UMR_LINEAR_HUB = 0xFF << 8,  // this is for linear access to vram
 };
