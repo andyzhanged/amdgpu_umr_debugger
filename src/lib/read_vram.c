@@ -300,7 +300,7 @@ static int umr_access_vram_ai(struct umr_asic *asic, uint32_t vmid,
 	uint64_t start_addr, page_table_start_addr, page_table_base_addr,
 		 page_table_size, pte_idx, pde_idx, pte_entry, pde_entry,
 		 pde_address, vga_base_address, vm_fb_offset, vm_fb_base,
-		 va_mask, offset_mask;
+		 va_mask, offset_mask, system_aperture_low, system_aperture_high;
 	uint32_t chunk_size, tmp;
 	int pde_cnt, current_depth, page_table_depth, first;
 	struct {
@@ -312,7 +312,10 @@ static int umr_access_vram_ai(struct umr_asic *asic, uint32_t vmid,
 			mmVM_CONTEXTx_PAGE_TABLE_BASE_ADDR_HI32,
 			mmVGA_MEMORY_BASE_ADDRESS,
 			mmVGA_MEMORY_BASE_ADDRESS_HIGH,
-			mmMC_VM_FB_OFFSET;
+			mmMC_VM_FB_OFFSET,
+			mmMC_VM_MX_L1_TLB_CNTL,
+			mmMC_VM_SYSTEM_APERTURE_LOW_ADDR,
+			mmMC_VM_SYSTEM_APERTURE_HIGH_ADDR;
 	} registers;
 	struct {
 		uint64_t
@@ -381,6 +384,11 @@ static int umr_access_vram_ai(struct umr_asic *asic, uint32_t vmid,
 	}
 
 	// read vm registers
+	registers.mmMC_VM_SYSTEM_APERTURE_HIGH_ADDR = umr_read_reg_by_name_by_ip(asic, hub, "mmMC_VM_SYSTEM_APERTURE_HIGH_ADDR");
+	registers.mmMC_VM_SYSTEM_APERTURE_LOW_ADDR = umr_read_reg_by_name_by_ip(asic, hub, "mmMC_VM_SYSTEM_APERTURE_LOW_ADDR");
+	system_aperture_low = ((uint64_t)registers.mmMC_VM_SYSTEM_APERTURE_LOW_ADDR) << 18;
+	system_aperture_high = ((uint64_t)registers.mmMC_VM_SYSTEM_APERTURE_HIGH_ADDR) << 18;
+	registers.mmMC_VM_MX_L1_TLB_CNTL = umr_read_reg_by_name_by_ip(asic, hub, "mmMC_VM_MX_L1_TLB_CNTL");
 	sprintf(buf, "mmVM_CONTEXT%" PRIu32 "_PAGE_TABLE_START_ADDR_LO32", vmid);
 		registers.mmVM_CONTEXTx_PAGE_TABLE_START_ADDR_LO32 = umr_read_reg_by_name_by_ip(asic, hub, buf);
 		page_table_start_addr = (uint64_t)registers.mmVM_CONTEXTx_PAGE_TABLE_START_ADDR_LO32 << 12;
@@ -425,7 +433,10 @@ static int umr_access_vram_ai(struct umr_asic *asic, uint32_t vmid,
 				"mmVGA_MEMORY_BASE_ADDRESS=0x%" PRIx32 "\n"
 				"mmVGA_MEMORY_BASE_ADDRESS_HIGH=0x%" PRIx32 "\n"
 				"mmMC_VM_FB_OFFSET=0x%" PRIx32 "\n"
-				"mmMC_VM_FB_LOCATION_BASE=0x%" PRIx64 "\n",
+				"mmMC_VM_FB_LOCATION_BASE=0x%" PRIx64 "\n"
+				"mmMC_VM_MX_L1_TLB_CNTL=0x%" PRIx32 "\n"
+				"mmMC_VM_SYSTEM_APERTURE_LOW_ADDR=0x%" PRIx32 "\n"
+				"mmMC_VM_SYSTEM_APERTURE_HIGH_ADDR=0x%" PRIx32 "\n",
 			vmid, registers.mmVM_CONTEXTx_PAGE_TABLE_START_ADDR_LO32,
 			vmid, registers.mmVM_CONTEXTx_PAGE_TABLE_START_ADDR_HI32,
 			vmid, registers.mmVM_CONTEXTx_PAGE_TABLE_BASE_ADDR_LO32,
@@ -434,10 +445,38 @@ static int umr_access_vram_ai(struct umr_asic *asic, uint32_t vmid,
 			registers.mmVGA_MEMORY_BASE_ADDRESS,
 			registers.mmVGA_MEMORY_BASE_ADDRESS_HIGH,
 			registers.mmMC_VM_FB_OFFSET,
-			vm_fb_base);
+			vm_fb_base,
+			registers.mmMC_VM_MX_L1_TLB_CNTL,
+			registers.mmMC_VM_SYSTEM_APERTURE_LOW_ADDR,
+			registers.mmMC_VM_SYSTEM_APERTURE_HIGH_ADDR
+			);
 
 	// transform page_table_base
 	page_table_base_addr -= vm_fb_offset;
+
+	if (vmid == 0) {
+		uint32_t sam = umr_bitslice_reg_by_name_by_ip(asic, hub, "mmMC_VM_MX_L1_TLB_CNTL", "SYSTEM_ACCESS_MODE", registers.mmMC_VM_MX_L1_TLB_CNTL);
+		// addresses in VMID0 need special handling w.r.t. PAGE_TABLE_START_ADDR
+		switch (sam) {
+			case 0: // physical access
+				return umr_access_vram(asic, UMR_LINEAR_HUB, address, size, dst, write_en);
+			case 1: // always VM access
+				break;
+			case 2: // inside system aperture is mapped, otherwise unmapped
+				if (!(address >= system_aperture_low && address < system_aperture_high))
+					return umr_access_vram(asic, UMR_LINEAR_HUB, address, size, dst, write_en);
+				break;
+			case 3: // inside system aperture is unmapped, otherwise mapped
+				if (address >= system_aperture_low && address < system_aperture_high)
+					return umr_access_vram(asic, UMR_LINEAR_HUB, address, size, dst, write_en);
+				break;
+			default:
+				asic->mem_funcs.vm_message("[WARNING]: Unhandled SYSTEM_ACCESS_MODE mode [%" PRIu32 "]\n", sam);
+				break;
+		}
+	}
+
+	// fallthrough, and/or VMIDs for >= 1 are always mapped
 	address -= page_table_start_addr;
 
 	do {
