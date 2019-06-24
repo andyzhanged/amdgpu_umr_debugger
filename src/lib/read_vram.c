@@ -384,11 +384,14 @@ static int umr_access_vram_ai(struct umr_asic *asic, uint32_t vmid,
 	}
 
 	// read vm registers
-	registers.mmMC_VM_SYSTEM_APERTURE_HIGH_ADDR = umr_read_reg_by_name_by_ip(asic, hub, "mmMC_VM_SYSTEM_APERTURE_HIGH_ADDR");
-	registers.mmMC_VM_SYSTEM_APERTURE_LOW_ADDR = umr_read_reg_by_name_by_ip(asic, hub, "mmMC_VM_SYSTEM_APERTURE_LOW_ADDR");
-	system_aperture_low = ((uint64_t)registers.mmMC_VM_SYSTEM_APERTURE_LOW_ADDR) << 18;
-	system_aperture_high = ((uint64_t)registers.mmMC_VM_SYSTEM_APERTURE_HIGH_ADDR) << 18;
-	registers.mmMC_VM_MX_L1_TLB_CNTL = umr_read_reg_by_name_by_ip(asic, hub, "mmMC_VM_MX_L1_TLB_CNTL");
+	if (vmid == 0) {
+		// only need system aperture registers if we're using VMID 0
+		registers.mmMC_VM_SYSTEM_APERTURE_HIGH_ADDR = umr_read_reg_by_name_by_ip(asic, hub, "mmMC_VM_SYSTEM_APERTURE_HIGH_ADDR");
+		registers.mmMC_VM_SYSTEM_APERTURE_LOW_ADDR = umr_read_reg_by_name_by_ip(asic, hub, "mmMC_VM_SYSTEM_APERTURE_LOW_ADDR");
+		system_aperture_low = ((uint64_t)registers.mmMC_VM_SYSTEM_APERTURE_LOW_ADDR) << 18;
+		system_aperture_high = ((uint64_t)registers.mmMC_VM_SYSTEM_APERTURE_HIGH_ADDR) << 18;
+		registers.mmMC_VM_MX_L1_TLB_CNTL = umr_read_reg_by_name_by_ip(asic, hub, "mmMC_VM_MX_L1_TLB_CNTL");
+	}
 	sprintf(buf, "mmVM_CONTEXT%" PRIu32 "_PAGE_TABLE_START_ADDR_LO32", vmid);
 		registers.mmVM_CONTEXTx_PAGE_TABLE_START_ADDR_LO32 = umr_read_reg_by_name_by_ip(asic, hub, buf);
 		page_table_start_addr = (uint64_t)registers.mmVM_CONTEXTx_PAGE_TABLE_START_ADDR_LO32 << 12;
